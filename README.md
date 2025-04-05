@@ -38,21 +38,28 @@ Alternatively, you can start the server directly using the Go tool:
   go run cmd/webmvc_employees/main.go
 ```
 
-This will compile and run the server on port 8080.
+This will compile and run the server on port **8080**.
 
-Accessing the Application:
-• API Server: The server listens on port 8080 by default.
-• Admin Dashboard:
-Navigate to http://localhost:8081 in your browser.
-Login using:
-• Username: root
-• Password: root
+### Accessing the Application
 
-Running Tests
+- **API Server:**  
+  The server listens on port **8080** by default.
 
-To run the tests (located in tests/employee_test.go), use the following command from the project root:
+- **Admin Dashboard:**  
+  Navigate to [http://localhost:8081](http://localhost:8081) in your browser.  
+  Login using:
+  - **Username:** `root`
+  - **Password:** `root`
 
+Below is a revised version of that section with improved formatting and clear instructions:
+
+## Running Tests
+
+To run the tests (located in `tests/employee_test.go`), use the following command from the project root:
+
+```bash
 go test ./tests/...
+```
 
 This command will execute all tests under the tests directory.
 
@@ -67,24 +74,34 @@ export PATH=$PATH:$HOME/go/bin
 
 If you are using zsh, reload your shell:
 
+```bash
+
 source ~/.zshrc
+```
 
 2. Generate Swagger Documentation
 
 Run the command below from the root of the project to automatically generate your Swagger docs:
 
+```bash
+
 swag init -g docs/doc.go --parseDependency --parseInternal --output ./docs
+```
 
 This command creates the documentation files in the ./docs directory.
 
 3. Building the Executables
 
 To build the executables yourself, use the following commands from the project root:
+• Build for Windows (64-bit):
 
-    •   Build for Windows (64-bit):
-
+```bash
 GOOS=windows GOARCH=amd64 go build -o windows_64bits.exe cmd/webmvc_employees/main.go
+```
 
     •	Build for macOS (Apple Silicon/M1):
 
+```bash
+
 GOOS=darwin GOARCH=arm64 go build -o macSilicon cmd/webmvc_employees/main.go
+```
