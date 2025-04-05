@@ -46,6 +46,14 @@ Login using:
 • Username: root
 • Password: root
 
+Running Tests
+
+To run the tests (located in tests/employee_test.go), use the following command from the project root:
+
+go test ./tests/...
+
+This command will execute all tests under the tests directory.
+
 Swagger Documentation & Building the Executables
 
 1. Install swag for Swagger Docs
@@ -77,11 +85,3 @@ GOOS=windows GOARCH=amd64 go build -o windows_64bits.exe cmd/webmvc_employees/ma
     •	Build for macOS (Apple Silicon/M1):
 
 GOOS=darwin GOARCH=arm64 go build -o macSilicon cmd/webmvc_employees/main.go
-
-Contributing
-
-Contributions are welcome! Feel free to fork this repository and submit pull requests. For any issues, please open an issue in the GitHub repository.
-
-License
-
-This project is licensed under the MIT License.

@@ -107,6 +107,7 @@ func validateBirthdate(birthdate models.Birthdate) error {
 
 	return nil
 }
+
 func validatePassword(password string) error {
 	if len(password) < 3 {
 		return errors.NewHTTPError(http.StatusBadRequest, "password must be at least 3 characters")
