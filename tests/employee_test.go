@@ -21,6 +21,7 @@ import (
 	"WebMVCEmployees/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	docker "github.com/docker/docker/client"
 )
@@ -39,34 +40,54 @@ var testServer *httptest.Server
 
 // TestMain is executed before any tests run.
 func TestMain(m *testing.M) {
+	// Load environment variables from .env.test.
+	if err := godotenv.Load(".env.test"); err != nil {
+		log.Println("No .env.test file found, continuing with system environment variables")
+	}
 
 	// Validate that Docker is running.
 	if err := checkDocker(); err != nil {
 		log.Println("Docker does not appear to be running. Please ensure Docker is installed and started.")
-		// Optionally, you can exit or handle the situation differently:
 		os.Exit(1)
 	}
+
 	// Set Gin to test mode.
 	gin.SetMode(gin.TestMode)
+
 	// Start the MongoDB container using docker-compose if it's not running.
 	if err := config.StartContainers(); err != nil {
 		log.Fatal("Failed to start MongoDB container:", err)
 	}
-	// Connect to MongoDB using a test connection string.
-	client, ctx, cancel, err := config.ConnectMongo("mongodb://root:example@localhost:27017")
+
+	// Retrieve MongoDB connection settings from environment variables.
+	mongoURL := os.Getenv("MONGO_URL")
+	if mongoURL == "" {
+		log.Fatal("MONGO_URL environment variable not set")
+	}
+	mongoDB := os.Getenv("MONGO_DB")
+	if mongoDB == "" {
+		mongoDB = "employees"
+	}
+	mongoCollection := os.Getenv("MONGO_COLLECTION")
+	if mongoCollection == "" {
+		mongoCollection = "employees"
+	}
+
+	// Connect to MongoDB using our config method.
+	client, ctx, cancel, err := config.ConnectMongo(mongoURL)
 	if err != nil {
 		panic("failed to connect to mongo: " + err.Error())
 	}
+	defer cancel()
 
 	// Initialize the EmployeeRepository.
-	repo, err := repository.NewEmployeeRepository(client, "employees", "employees")
+	repo, err := repository.NewEmployeeRepository(client, mongoDB, mongoCollection)
 	if err != nil {
 		log.Fatal("Failed to create employee repository:", err)
 	}
 
 	// Create the EmployeeService using the repository.
 	empService := services.NewEmployeeService(repo)
-
 	empController := controllers.NewEmployeeController(empService)
 
 	// Setup the router.
@@ -82,13 +103,12 @@ func TestMain(m *testing.M) {
 	testServer.Close()
 
 	// Clean up the MongoDB database before disconnecting.
-	err = config.CleanMongoDB(client, "employees", ctx)
+	err = config.CleanMongoDB(client, mongoDB, ctx)
 	if err != nil {
 		log.Printf("Error cleaning MongoDB: %v", err)
 	}
 
-	// Close the MongoDB connection.
-	cancel()
+	// Disconnect from MongoDB.
 	config.DisconnectMongo(client, ctx)
 
 	// Exit with the proper code.

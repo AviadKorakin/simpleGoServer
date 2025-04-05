@@ -16,6 +16,7 @@ import (
 	"WebMVCEmployees/services"
 
 	docker "github.com/docker/docker/client" // import the official Docker client package
+	"github.com/joho/godotenv"               // load env variables from a .env file
 )
 
 // checkDocker pings the Docker daemon to verify it's running.
@@ -29,10 +30,14 @@ func checkDocker() error {
 }
 
 func main() {
+	// Load environment variables from a .env file.
+	if err := godotenv.Load(".env.development"); err != nil {
+		log.Println("No .env.development file found, continuing with system environment variables")
+	}
+
 	// Validate that Docker is running.
 	if err := checkDocker(); err != nil {
 		log.Println("Docker does not appear to be running. Please ensure Docker is installed and started.")
-		// Optionally, you can exit or handle the situation differently:
 		os.Exit(1)
 	}
 
@@ -41,15 +46,29 @@ func main() {
 		log.Fatal("Failed to start MongoDB container:", err)
 	}
 
+	// Retrieve configuration values from environment variables.
+	mongoURL := os.Getenv("MONGO_URL")
+	if mongoURL == "" {
+		log.Fatal("MONGO_URL environment variable not set")
+	}
+	mongoDB := os.Getenv("MONGO_DB")
+	if mongoDB == "" {
+		log.Fatal("MONGO_DB environment variable not set")
+	}
+	mongoCollection := os.Getenv("MONGO_COLLECTION")
+	if mongoCollection == "" {
+		log.Fatal("MONGO_COLLECTION environment variable not set")
+	}
+
 	// Connect to MongoDB using our config method.
-	client, _, cancel, err := config.ConnectMongo("mongodb://root:example@localhost:27017")
+	client, _, cancel, err := config.ConnectMongo(mongoURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer cancel()
 
 	// Initialize the EmployeeRepository.
-	repo, err := repository.NewEmployeeRepository(client, "employees", "employees")
+	repo, err := repository.NewEmployeeRepository(client, mongoDB, mongoCollection)
 	if err != nil {
 		log.Fatal("Failed to create employee repository:", err)
 	}
@@ -91,7 +110,7 @@ func main() {
 	defer bgCancel()
 
 	// Clean up the MongoDB database before disconnecting.
-	err = config.CleanMongoDB(client, "employees", bgCtx)
+	err = config.CleanMongoDB(client, mongoDB, bgCtx)
 	if err != nil {
 		log.Printf("Error cleaning MongoDB: %v", err)
 	}
