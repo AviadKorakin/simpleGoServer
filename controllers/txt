@@ -1,0 +1,118 @@
+// // ListEmployeesByEmailDomainHandler handles GET /employees?criteria=byEmailDomain&value={domain}&page={page}&size={size}
+// // @Summary List employees by email domain
+// // @Description Returns employees whose email domain exactly matches the provided value, with pagination.
+// // @Tags employees
+// // @Produce json
+// // @Param criteria query string true "Filter criteria" default(byEmailDomain)
+// // @Param value query string true "Email domain value"
+// // @Param page query int true "Page number"
+// // @Param size query int true "Page size"
+// // @Success 200 {array} models.Employee
+// // @Router /employees [get]
+// func (c *EmployeeController) ListEmployeesByEmailDomainHandler(ctx *gin.Context) {
+// 	domain := ctx.Query("value")
+// 	if domain == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing domain value"})
+// 		return
+// 	}
+// 	page, err := strconv.Atoi(ctx.Query("page"))
+// 	if err != nil || page < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+// 		return
+// 	}
+// 	size, err := strconv.Atoi(ctx.Query("size"))
+// 	if err != nil || size < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size parameter"})
+// 		return
+// 	}
+
+// 	cx, cancel := context.WithTimeout(ctx.Request.Context(), 10*time.Second)
+// 	defer cancel()
+
+// 	employees, err := c.Service.GetEmployeesByEmailDomain(cx, domain, page, size)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, employees)
+// }
+// // ListEmployeesByRoleHandler handles GET /employees?criteria=byRole&value={role}&page={page}&size={size}
+// // @Summary List employees by role
+// // @Description Returns employees who have the specified role, with pagination.
+// // @Tags employees
+// // @Produce json
+// // @Param criteria query string true "Filter criteria" default(byRole)
+// // @Param value query string true "Role value"
+// // @Param page query int true "Page number"
+// // @Param size query int true "Page size"
+// // @Success 200 {array} models.Employee
+// // @Router /employees [get]
+// func (c *EmployeeController) ListEmployeesByRoleHandler(ctx *gin.Context) {
+// 	role := ctx.Query("value")
+// 	if role == "" {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing role value"})
+// 		return
+// 	}
+// 	page, err := strconv.Atoi(ctx.Query("page"))
+// 	if err != nil || page < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+// 		return
+// 	}
+// 	size, err := strconv.Atoi(ctx.Query("size"))
+// 	if err != nil || size < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size parameter"})
+// 		return
+// 	}
+
+// 	cx, cancel := context.WithTimeout(ctx.Request.Context(), 10*time.Second)
+// 	defer cancel()
+
+// 	employees, err := c.Service.GetEmployeesByRole(cx, role, page, size)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, employees)
+// }
+// // ListEmployeesByAgeHandler handles GET /employees?criteria=byAge&value={ageInYears}&page={page}&size={size}
+// // @Summary List employees by age
+// // @Description Returns employees whose age (in years) matches the provided value, with pagination.
+// // @Tags employees
+// // @Produce json
+// // @Param criteria query string true "Filter criteria" default(byAge)
+// // @Param value query int true "Age in years"
+// // @Param page query int true "Page number"
+// // @Param size query int true "Page size"
+// // @Success 200 {array} models.Employee
+// // @Router /employees [get]
+// func (c *EmployeeController) ListEmployeesByAgeHandler(ctx *gin.Context) {
+// 	ageStr := ctx.Query("value")
+// 	age, err := strconv.Atoi(ageStr)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid age value"})
+// 		return
+// 	}
+// 	page, err := strconv.Atoi(ctx.Query("page"))
+// 	if err != nil || page < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+// 		return
+// 	}
+// 	size, err := strconv.Atoi(ctx.Query("size"))
+// 	if err != nil || size < 1 {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size parameter"})
+// 		return
+// 	}
+
+// 	// Use the current Unix time for age calculation.
+// 	currentUnix := time.Now().Unix()
+
+// 	cx, cancel := context.WithTimeout(ctx.Request.Context(), 10*time.Second)
+// 	defer cancel()
+
+// 	employees, err := c.Service.GetEmployeesByAge(cx, age, currentUnix, page, size)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, employees)
+// }

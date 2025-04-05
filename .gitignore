@@ -1,0 +1,26 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+*.out
+*.test
+
+# Output directories
+/bin/
+/build/
+
+# Dependency directories (if vendoring is used)
+vendor/
+
+# Go workspace file (if used)
+go.work
+
+# IDE and Editor folders/files
+.idea/
+.vscode/
+*.swp
+.DS_Store

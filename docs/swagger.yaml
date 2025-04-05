@@ -1,0 +1,325 @@
+basePath: /
+definitions:
+  models.Birthdate:
+    properties:
+      day:
+        description: Day represents the two-digit day.
+        example: "03"
+        type: string
+      month:
+        description: Month represents the two-digit month.
+        example: "01"
+        type: string
+      year:
+        description: Year represents the four-digit year.
+        example: "1999"
+        type: string
+    type: object
+  models.Employee:
+    description: An employee with email, name, password, birthdate, and roles.
+    properties:
+      birthdate:
+        allOf:
+        - $ref: '#/definitions/models.Birthdate'
+        description: Birthdate contains the employee's date of birth.
+      email:
+        description: Email is the unique identifier.
+        example: janesmith@s.afeka.ac.il
+        type: string
+      manager:
+        description: Manager optionally stores the email of the employee's manager.
+        example: manager@s.example.com
+        type: string
+      name:
+        description: Name is the full name of the employee.
+        example: Jane Smith
+        type: string
+      password:
+        description: Password is the employee's password.
+        example: Pa5
+        type: string
+      roles:
+        description: Roles contains the roles or permissions of the employee.
+        example:
+        - DevOps
+        - R&D
+        items:
+          type: string
+        type: array
+    type: object
+  models.EmployeeResponse:
+    description: An employee with email, name, birthdate, and roles.
+    properties:
+      birthdate:
+        allOf:
+        - $ref: '#/definitions/models.Birthdate'
+        description: Birthdate contains the employee's date of birth.
+      email:
+        description: Email is the unique identifier.
+        example: janesmith@s.afeka.ac.il
+        type: string
+      manager:
+        description: Manager optionally stores the email of the employee's manager.
+        example: manager@s.example.com
+        type: string
+      name:
+        description: Name is the full name of the employee.
+        example: Jane Smith
+        type: string
+      roles:
+        description: Roles contains the roles or permissions of the employee.
+        example:
+        - DevOps
+        - R&D
+        items:
+          type: string
+        type: array
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        description: Error is the error message.
+        example: Invalid request payload
+        type: string
+    type: object
+  models.ManagerEmailBoundary:
+    properties:
+      email:
+        description: The email of the manager.
+        example: manager@s.example.com
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server for managing employees.
+  title: WebMVCEmployees API
+  version: "1.0"
+paths:
+  /employees:
+    delete:
+      description: Deletes all employee records from the service.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete all employees
+      tags:
+      - employees
+    get:
+      description: Returns a paginated list of employees. When the "criteria" query
+        parameter is provided,
+      parameters:
+      - default: ""
+        description: 'Filter criteria. Allowed values: byEmailDomain,byRole,byAge.
+          If set to ''none'' or omitted, all employees are returned'
+        enum:
+        - byEmailDomain
+        - byRole
+        - byAge
+        in: query
+        name: criteria
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.EmployeeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: List employees with filtering
+      tags:
+      - employees
+    post:
+      consumes:
+      - application/json
+      description: Accepts employee details in JSON, validates and stores the employee.
+      parameters:
+      - description: Employee details
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EmployeeResponse'
+      summary: Create a new employee
+      tags:
+      - employees
+  /employees/{employeeEmail}:
+    get:
+      description: Returns employee details if the provided email and password match
+        a record.
+      parameters:
+      - description: Employee email
+        in: path
+        name: employeeEmail
+        required: true
+        type: string
+      - description: Employee password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EmployeeResponse'
+      summary: Get an employee by email and password
+      tags:
+      - employees
+  /employees/{employeeEmail}/manager:
+    delete:
+      description: Unsets the manager for the specified employee.
+      parameters:
+      - description: Employee email
+        in: path
+        name: employeeEmail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Remove manager association from an employee
+      tags:
+      - employees
+    get:
+      description: Returns the manager details (excluding password) for the specified
+        employee.
+      parameters:
+      - description: Employee email
+        in: path
+        name: employeeEmail
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EmployeeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get manager of an employee
+      tags:
+      - employees
+    put:
+      consumes:
+      - application/json
+      description: Associates an employee with a manager using ManagerEmailBoundary
+        JSON.
+      parameters:
+      - description: Employee email
+        in: path
+        name: employeeEmail
+        required: true
+        type: string
+      - description: Manager email
+        in: body
+        name: manager
+        required: true
+        schema:
+          $ref: '#/definitions/models.ManagerEmailBoundary'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Set manager for an employee
+      tags:
+      - employees
+  /managers/{managerEmail}/subordinates:
+    get:
+      description: Returns a paginated list of employees managed by the specified
+        manager.
+      parameters:
+      - description: Manager email
+        in: path
+        name: managerEmail
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.EmployeeResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get subordinates for a manager
+      tags:
+      - employees
+swagger: "2.0"
