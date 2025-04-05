@@ -24,7 +24,7 @@ You can run the server using the pre-built executables:
   Run `webmvc_employees.exe` by double-clicking it or from the command line.
 
 - **For macOS (Apple Silicon/M1):**  
-  Run `macSilicon` from the terminal:
+  Run `webmvc_employees.dmg` from the terminal:
 
   ```bash
   ./webmvc_employees
@@ -96,12 +96,12 @@ To build the executables yourself, use the following commands from the project r
 Build for Windows (64-bit):
 
 ```bash
-GOOS=windows GOARCH=amd64 go build -o windows_64bits.exe cmd/webmvc_employees/main.go
+GOOS=windows GOARCH=amd64 go build -o webmvc_employees.exe cmd/webmvc_employees/main.go
 ```
 
 Build for macOS (Apple Silicon/M1):
 
 ```bash
 
-GOOS=darwin GOARCH=arm64 go build -o macSilicon cmd/webmvc_employees/main.go
+GOOS=darwin GOARCH=arm64 go build -o webmvc_employees cmd/webmvc_employees/main.go
 ```
