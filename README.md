@@ -34,11 +34,13 @@ Option B: Using go run
 
 Alternatively, you can start the server directly using the Go tool:
 
-go run cmd/webmvc_employees/main.go
+```bash
+  go run cmd/webmvc_employees/main.go
+```
 
 This will compile and run the server on port 8080.
 
-Accessing the Application
+Accessing the Application:
 • API Server: The server listens on port 8080 by default.
 • Admin Dashboard:
 Navigate to http://localhost:8081 in your browser.
