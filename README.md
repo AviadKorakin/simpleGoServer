@@ -93,13 +93,13 @@ This command creates the documentation files in the ./docs directory.
 3. Building the Executables
 
 To build the executables yourself, use the following commands from the project root:
-• Build for Windows (64-bit):
+Build for Windows (64-bit):
 
 ```bash
 GOOS=windows GOARCH=amd64 go build -o windows_64bits.exe cmd/webmvc_employees/main.go
 ```
 
-    •	Build for macOS (Apple Silicon/M1):
+Build for macOS (Apple Silicon/M1):
 
 ```bash
 
