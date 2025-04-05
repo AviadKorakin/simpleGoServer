@@ -21,13 +21,13 @@ WebMVCEmployees is a Go-based web application that manages employee data. It inc
 You can run the server using the pre-built executables:
 
 - **For Windows (64-bit):**  
-  Run `windows_64bits.exe` by double-clicking it or from the command line.
+  Run `webmvc_employees.exe` by double-clicking it or from the command line.
 
 - **For macOS (Apple Silicon/M1):**  
   Run `macSilicon` from the terminal:
 
   ```bash
-  ./macSilicon
+  ./webmvc_employees
   ```
 
 Option B: Using go run
