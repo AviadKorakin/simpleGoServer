@@ -8,6 +8,8 @@
 # Build output
 *.out
 *.test
+*.exe
+*.dmg
 
 # Output directories
 /bin/
