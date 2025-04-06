@@ -1,7 +1,3 @@
-Here’s a polished, visually appealing Docker section for your README. I've structured it to highlight Docker workflows while maintaining clarity and engagement:
-
----
-
 # WebMVCEmployees
 
 WebMVCEmployees is a Go-based web application designed to manage employee data. It features integrated Swagger documentation for the API, an admin dashboard, and seamless Docker integration for effortless deployment.
