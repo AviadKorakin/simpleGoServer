@@ -79,10 +79,10 @@ go run cmd/webmvc_employees/main.go
 
 Download or build standalone binaries:
 
-| Platform                  | Command                                                                                   |
-| ------------------------- | ----------------------------------------------------------------------------------------- |
-| **Windows (64-bit)**      | `GOOS=windows GOARCH=amd64 go build -o webmvc_employees.exe cmd/webmvc_employees/main.go` |
-| **macOS (Apple Silicon)** | `GOOS=darwin GOARCH=arm64 go build -o webmvc_employees cmd/webmvc_employees/main.go`      |
+| Platform                  | Command                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Windows (64-bit)**      | `GOOS=windows GOARCH=amd64 go build -o build/webmvc_employees.exe cmd/webmvc_employees/main.go` |
+| **macOS (Apple Silicon)** | `GOOS=darwin GOARCH=arm64 go build -o build/webmvc_employees cmd/webmvc_employees/main.go`      |
 
 ---
 
