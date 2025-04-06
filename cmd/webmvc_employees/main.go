@@ -30,20 +30,21 @@ func checkDocker() error {
 }
 
 func main() {
-	// Load environment variables from a .env file.
-	if err := godotenv.Load(".env.development"); err != nil {
-		log.Println("No .env.development file found, continuing with system environment variables")
-	}
-
 	// Validate that Docker is running.
-	if err := checkDocker(); err != nil {
-		log.Println("Docker does not appear to be running. Please ensure Docker is installed and started.")
-		os.Exit(1)
-	}
-
-	// Start the MongoDB container using docker-compose if it's not running.
-	if err := config.StartContainers(); err != nil {
-		log.Fatal("Failed to start MongoDB container:", err)
+	dockerized := os.Getenv("DOCKERIZED")
+	if dockerized != "true" {
+		// Load environment variables from a .env file.
+		if err := godotenv.Load(".env.development"); err != nil {
+			log.Println("No .env.development file found, continuing with system environment variables")
+		}
+		// validate docker is running
+		if err := checkDocker(); err != nil {
+			log.Println("Docker does not appear to be running.")
+		}
+		// Start the MongoDB container using docker-compose if it's not running.
+		if err := config.StartContainers(); err != nil {
+			log.Fatal("Failed to start MongoDB container:", err)
+		}
 	}
 
 	// Retrieve configuration values from environment variables.

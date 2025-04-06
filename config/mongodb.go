@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -22,82 +23,6 @@ func IsContainerRunning(containerName string) (bool, error) {
 	// If the output contains the containerName, it's running.
 	return strings.Contains(string(output), containerName), nil
 }
-
-// startMongoContainer starts the MongoDB container using docker compose if it's not already running.
-func StartMongoContainer() error {
-	const containerName = "webmvc_employees_mongodb"
-	running, err := IsContainerRunning(containerName)
-	if err != nil {
-		return err
-	}
-	if running {
-		log.Println("MongoDB container is already running.")
-		return nil
-	}
-
-	log.Println("Starting MongoDB container via docker compose...")
-	// Change the working directory if necessary so that docker-compose.yml is found.
-	cmd := exec.Command("docker", "compose", "up", "-d", "mongodb")
-	cmd.Dir = "." // Adjust this if your docker-compose.yml is located elsewhere.
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Error starting docker compose:", string(output))
-		return err
-	}
-	return nil
-}
-
-// stopMongoContainer stops the MongoDB container using docker compose.
-func StopMongoContainer() error {
-	log.Println("Stopping MongoDB container via docker compose...")
-	cmd := exec.Command("docker", "compose", "down")
-	cmd.Dir = "." // Adjust this if necessary.
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Error stopping docker compose:", string(output))
-		return err
-	}
-	return nil
-}
-
-func StartContainers() error {
-	log.Println("Starting containers via docker compose...")
-	cmd := exec.Command("docker", "compose", "up", "-d")
-	cmd.Dir = "."
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Error starting docker compose:", string(output))
-		return err
-	}
-	return nil
-}
-
-// StopContainers stops all containers defined in the docker-compose.yml file using docker compose.
-func StopContainers() error {
-	log.Println("Stopping containers via docker compose...")
-	cmd := exec.Command("docker", "compose", "stop")
-	cmd.Dir = "."
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Error stopping docker compose:", string(output))
-		return err
-	}
-	return nil
-}
-
-// CleanupContainers stops and removes all containers defined in your docker-compose file using docker compose.
-func CleanupContainers() error {
-	log.Println("Cleaning up containers via docker compose (down)...")
-	cmd := exec.Command("docker", "compose", "down")
-	cmd.Dir = "." // Adjust if necessary.
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Error cleaning up containers:", string(output))
-		return err
-	}
-	return nil
-}
-
 func ConnectMongo(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
 	// Create a context with a 10-second timeout for operations.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -123,8 +48,11 @@ func DisconnectMongo(client *mongo.Client, ctx context.Context) error {
 	if err := client.Disconnect(ctx); err != nil {
 		return err
 	}
-	if err := StopContainers(); err != nil {
-		return err
+	dockerized := os.Getenv("DOCKERIZED")
+	if dockerized != "true" {
+		if err := StopContainers(); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -138,4 +66,99 @@ func CleanMongoDB(client *mongo.Client, dbName string, ctx context.Context) erro
 		log.Printf("Error dropping database %s: %v", dbName, err)
 	}
 	return err
+}
+
+// startMongoContainer starts the MongoDB container using docker compose if it's not already running.
+func StartMongoContainer() error {
+	const containerName = "webmvc_employees_mongodb"
+	running, err := IsContainerRunning(containerName)
+	if err != nil {
+		return err
+	}
+	if running {
+		log.Println("MongoDB container is already running.")
+		return nil
+	}
+
+	log.Println("Starting MongoDB container via docker compose...")
+	// Add -f flag to specify the compose file
+	cmd := exec.Command(
+		"docker", "compose",
+		"-f", "docker-compose.exetuable.yml", // <-- Added this line
+		"up", "-d", "mongodb",
+	)
+	cmd.Dir = "."
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("Error starting docker compose:", string(output))
+		return err
+	}
+	return nil
+}
+
+// stopMongoContainer stops the MongoDB container using docker compose.
+func StopMongoContainer() error {
+	log.Println("Stopping MongoDB container via docker compose...")
+	cmd := exec.Command(
+		"docker", "compose",
+		"-f", "docker-compose.exetuable.yml", // <-- Added this line
+		"down",
+	)
+	cmd.Dir = "."
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("Error stopping docker compose:", string(output))
+		return err
+	}
+	return nil
+}
+
+func StartContainers() error {
+	log.Println("Starting containers via docker compose...")
+	cmd := exec.Command(
+		"docker", "compose",
+		"-f", "docker-compose.exetuable.yml", // <-- Added this line
+		"up", "-d",
+	)
+	cmd.Dir = "."
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("Error starting docker compose:", string(output))
+		return err
+	}
+	return nil
+}
+
+// StopContainers stops all containers defined in the docker-compose.yml file using docker compose.
+func StopContainers() error {
+	log.Println("Stopping containers via docker compose...")
+	cmd := exec.Command(
+		"docker", "compose",
+		"-f", "docker-compose.exetuable.yml", // <-- Added this line
+		"stop",
+	)
+	cmd.Dir = "."
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("Error stopping docker compose:", string(output))
+		return err
+	}
+	return nil
+}
+
+// CleanupContainers stops and removes all containers defined in your docker-compose file using docker compose.
+func CleanupContainers() error {
+	log.Println("Cleaning up containers via docker compose (down)...")
+	cmd := exec.Command(
+		"docker", "compose",
+		"-f", "docker-compose.exetuable.yml", // <-- Added this line
+		"down",
+	)
+	cmd.Dir = "."
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("Error cleaning up containers:", string(output))
+		return err
+	}
+	return nil
 }
