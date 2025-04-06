@@ -45,6 +45,11 @@ func main() {
 		if err := config.StartContainers(); err != nil {
 			log.Fatal("Failed to start MongoDB container:", err)
 		}
+	} else {
+		// Load environment variables from a .env file.
+		if err := godotenv.Load(".env.docker"); err != nil {
+			log.Println("No .env.development file found, continuing with system environment variables")
+		}
 	}
 
 	// Retrieve configuration values from environment variables.
